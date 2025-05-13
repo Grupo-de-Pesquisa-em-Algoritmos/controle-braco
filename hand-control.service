@@ -1,0 +1,13 @@
+[Unit]
+Description=Hand control service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/opt/hand-control
+ExecStart=flask run --host=0.0.0.0
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Mão Robótica</title>
+    <style>
+@media (max-width: 768px) {
+   body {
+     padding: 0 10px;
+   }
+ 
+   body,
+   section {
+     background-attachment: scroll;
+   }
+ 
+   html, body {
+     width: 100%;
+     overflow-x: hidden;
+   }  
+   
+   .title {
+     font-size: 2.3rem;
+     text-align: center;
+   }
+ 
+   .subtitle {
+     font-size: 1.1rem;
+   }
+ 
+   section h2 {
+     font-size: 1.8rem;
+   }
+ 
+   section p {
+     font-size: 1rem;
+     line-height: 1.5;
+   }
+ 
+   .columns {
+     flex-direction: column;
+     gap: 20px;
+   }
+ 
+   .column {
+     flex: 1 1 100%;
+     padding: 15px;
+   }
+ 
+   .slider {
+     height: auto;
+   }
+ 
+   .slider-nav button {
+     padding: 10px 20px;
+   }
+ 
+   form input, form textarea {
+     font-size: 0.95rem;
+   }
+ 
+   footer {
+     font-size: 0.8rem;
+   }
+ }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: radial-gradient(circle, #0a0a0a, #1c1c1c);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+        }
+
+        .hand-container {
+            position: relative;
+            width: 400px;
+            height: 500px;
+        }
+
+        .hand-image {
+            background-position: center center;
+            background-image: url("mao.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+
+            position: center;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0px 0px 10px rgba(0, 255, 255, 0.5));
+        }
+
+        .slider-container {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            transform-style: preserve-3d;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .slider {
+            pointer-events: auto;
+	        z-index: 0;
+	        touch-action: none;
+         
+            appearance: none;
+            width: 130px;
+            height: 8px;
+            background: linear-gradient(90deg, #0ff, #00f);
+            border-radius: 5px;
+            outline: none;
+            transform: rotate(-90deg);
+            cursor: pointer;
+            opacity: 0.9;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .slider:hover {
+            opacity: 1;
+            transform: rotate(-90deg) scale(1.1);
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border: 2px solid #0ff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px cyan;
+        }
+
+        @media (pointer:none), (pointer:coarse) {
+            .slider::-webkit-slider-thumb {
+                width: 25px;
+                height: 25px;
+            }
+        }
+
+        .slider-value {
+            user-select: none;
+    	    pointer-events: none;
+	        z-index:1;
+
+	        background-color: inherit !important;
+            color: inherit !important;
+
+            margin-top: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff;
+            transition: transform 0.2s ease-in-out;
+            transform: rotate(0deg); /* Removido o efeito de rotação */
+        }
+
+        /* Posicionamento correto dos sliders em relação aos dedos */
+        #servo1-container { top: 125px; left: 91px; transform: rotate(-189deg); }  /* Indicador */
+        #servo2-container { top: 110px; left: 147px; transform: rotate(-180deg); } /* Médio */
+        #servo3-container { top: 125px; left: 201px; transform: rotate(-169deg); }  /* Anelar */
+        #servo4-container { top: 155px; left: 250px; transform: rotate(-160deg); } /* Mínimo */
+        #servo5-container { top: 245px; left: 35px; transform: rotate(-220deg); } /* Polegar */
+        #servo6-container { top: 357px; left: 150px; transform: rotate(90deg);} /* Pulso */
+
+        #moveselected-container { top: 450px; left: 150px; transform: rotate(90deg);} /* mov sel*/
+
+
+        #servo1-value { transform: rotate(189deg); }
+        #servo2-value { transform: rotate(180deg); }
+        #servo3-value { transform: rotate(169deg); }
+        #servo4-value { transform: rotate(160deg); }
+        #servo5-value { transform: rotate(220deg); }
+        #servo6-value { transform: rotate(-90deg); }
+        #moveselected-value { transform: rotate(-90deg); }
+
+        #checkbox1{
+            transform: scale(1.5);
+        }
+
+        #checkbox2{
+            transform: scale(1.5);
+        }
+
+        #checkbox3{
+            transform: scale(1.5);
+        }
+
+        #checkbox4{
+            transform: scale(1.5);
+        }
+
+        #checkbox5{
+            transform: scale(1.5);
+        }
+
+        #checkbox6{
+            transform: scale(1.5) rotate(90deg);
+        }
+
+        .checkbox-container {
+            position: absolute;
+            bottom: -65px; /* Position checkboxes above sliders */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            z-index: 2;
+            pointer-events: auto;
+            transform: rotate(180deg);
+        }
+
+        .checkbox-container label {
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .center-checkbox {
+            position: absolute;
+            justify-content: center;
+            top: 55%;
+            left: 57%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+        }
+
+.button-group {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 4;
+}
+
+#open-all, #close-all {
+    width: 100%;
+    position: relative;
+    margin-left: auto;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+#open-all {
+    background: linear-gradient(90deg, #66ff00, #66cc00);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+}
+
+#close-all {
+    background: linear-gradient(90deg, #ff0000, #cc0000);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+}
+
+#open-all:hover { background: linear-gradient(90deg, #66cc00, #669900); }
+#close-all:hover { background: linear-gradient(90deg, #cc0000, #990000); }
+#open-all:active { background: linear-gradient(90deg, #669900, #666600); }
+#close-all:active { background: linear-gradient(90deg, #990000, #660000); }
+
+    </style>
+    <script src="socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="hand-container">
+            <!-- Imagem da mão robótica -->
+            <div class="hand-image"></div>
+
+            <input type="checkbox" id="center-checkbox" class="center-checkbox" onclick="endis()"/>
+            
+            <!-- Sliders para os dedos -->
+            <div class="slider-container" id="servo1-container">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="checkbox1" />
+                </div>
+                <input type="range" min="0" max="180" value="0" class="slider" id="servo1" oninput="send_data(0, this.value)">
+                <span class="slider-value" id="servo1-value">0°</span>
+            </div>
+            <div class="slider-container" id="servo2-container">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="checkbox2" />
+                </div>
+                <input type="range" min="0" max="180" value="0" class="slider" id="servo2" oninput="send_data(1, this.value)">
+                <span class="slider-value" id="servo2-value">0°</span>
+            </div>
+            <div class="slider-container" id="servo3-container">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="checkbox3" />
+                </div>
+                <input type="range" min="0" max="180" value="0" class="slider" id="servo3" oninput="send_data(2, this.value)">
+                <span class="slider-value" id="servo3-value">0°</span>
+            </div>
+            <div class="slider-container" id="servo4-container">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="checkbox4" />
+                </div>
+
+                <input type="range" min="0" max="180" value="0" class="slider" id="servo4" oninput="send_data(3, this.value)">
+                <span class="slider-value" id="servo4-value">0°</span>
+            </div>
+            <div class="slider-container" id="servo5-container">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="checkbox5" />
+                </div>
+
+                <input type="range" min="0" max="180" value="0" class="slider" id="servo5" oninput="send_data(4, this.value)">
+                <span class="slider-value" id="servo5-value">0°</span>
+            </div>
+            <div class="slider-container" id="servo6-container">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="checkbox6" />
+                </div>
+
+                <input type="range" min="0" max="180" value="0" class="slider" id="servo6" oninput="send_data(5, this.value)">
+                <span class="slider-value" id="servo6-value">0°</span>
+            </div>
+          <div class="slider-container" id="moveselected-container">
+            <input type="range" min="0" max="180" value="0" class="slider" id="moveselected" oninput="send_data(6, this.value)">
+            <span class="slider-value" id="moveselected-value">0°</span>
+        </div>
+
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button id="open-all" onclick="openAllFingers()">Abrir Selecionados</button>
+        <button id="close-all" onclick="closeAllFingers()">Fechar Selecionados</button>
+    </div>
+
+    <script>
+        document.addEventListener('touchstart', function(e) {
+            document.documentElement.style.overflow = 'hidden';
+        });
+
+        document.addEventListener('touchend', function(e) {
+            document.documentElement.style.overflow = 'auto';
+        });
+
+        document.body.style.webkitTouchCallout='none';
+
+        const servoValues = document.querySelectorAll('.slider-value');
+    
+        const socket = io();
+    
+        const send_data = (motor, amnt, all_movs = undefined) => {
+            if(!all_movs){
+                all_movs = get_moveall_int();
+            }
+
+            if(motor === 6){
+                document.getElementById(`moveselected`).value = amnt;
+                document.getElementById(`moveselected-value`).textContent = `${amnt}°`;
+
+                for(let i = 0; i < 6; ++i){
+                    if(!(all_movs & (1 << i))){
+                        continue;
+                    }
+
+                    const sliderElement = document.getElementById(`servo${i + 1}`);
+                    sliderElement.value = amnt;
+
+                    const valueElement = document.getElementById(`servo${i + 1}-value`);
+    
+                    valueElement.textContent = `${amnt}°`;
+                    valueElement.style.transform = `rotate(${valueElement.dataset.rotation}) scale(1.2)`;
+    
+                    setTimeout(() => {
+                        valueElement.style.transform = `rotate(${valueElement.dataset.rotation}) scale(1)`;
+                    }, 200);
+
+                }
+            } else{
+              const valueElement = document.getElementById(`servo${motor + 1}-value`);
+    
+              valueElement.textContent = `${amnt}°`;
+              valueElement.style.transform = `rotate(${valueElement.dataset.rotation}) scale(1.2)`;
+    
+              setTimeout(() => {
+                  valueElement.style.transform = `rotate(${valueElement.dataset.rotation}) scale(1)`;
+              }, 200);
+            }
+    
+            console.log(motor + ':' + amnt);
+    
+            socket.emit('mov', {
+                'motor': motor,
+                'amnt': amnt,
+                'mov_all': all_movs
+            });
+        };
+    
+        const get_moveall_int = () => {
+            let m = 0;
+            for (let i = 0; i < 6; i++) {
+                const checkbox = document.getElementById(`checkbox${i + 1}`);
+                if (checkbox && checkbox.checked) {
+                    m |= (1 << i);
+                }
+            }
+            return m;
+        };
+
+        const endis = () => {
+             let checked = document.getElementById('center-checkbox').checked;
+
+             for (let i = 0; i < 5; i++) {
+                document.getElementById(`checkbox${i + 1}`).checked = checked;
+            }
+        };
+
+        function closeAllFingers() {
+            send_data(6, 180, get_moveall_int());
+        }
+
+        function openAllFingers() {
+            send_data(6, 0, get_moveall_int());
+        }
+    </script>    
+</body>
+</html>
