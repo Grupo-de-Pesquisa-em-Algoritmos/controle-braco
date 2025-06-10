@@ -20,13 +20,15 @@ Este projeto permite controlar um conjunto de servos que compõem a mão de um b
 2. Clone este repositório:
 
    ```bash
-   git clone https://github.com/Grupo-de-Pesquisa-em-Algoritmos/controle-braco.git
+   $ git clone https://github.com/Grupo-de-Pesquisa-em-Algoritmos/controle-braco.git
    ```
 3. Acesse a pasta do projeto e instale:
 
    ```bash
-   cd controle-braco
-   make install
+   $ cd controle-braco
+   ```
+   ```bash
+   # make install
    ```
 
 ## Configuração de pinos
