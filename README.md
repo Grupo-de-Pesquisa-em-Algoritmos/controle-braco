@@ -73,3 +73,13 @@ Caso queira disponibilizar o serviço como ponto de acesso local:
    ```
    http://10.42.0.1:5000
    ```
+
+## Troubleshooting
+Ao usar um Raspberry Pi 5, a biblioteca padrão RPi.GPIO não é mais compatível. É necessário substituí-la pela rpi-lgpio.
+```bash
+# sudo apt remove python3-rpi.gpio
+```
+e, depois de executar os comandos anteriores:
+```bash
+$ pip3 --break-system-packages install rpi-lgpio
+```
