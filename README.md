@@ -77,7 +77,7 @@ Caso queira disponibilizar o serviço como ponto de acesso local:
 ## Troubleshooting
 Ao usar um Raspberry Pi 5, a biblioteca padrão RPi.GPIO não é mais compatível. É necessário substituí-la pela rpi-lgpio.
 ```bash
-# sudo apt remove python3-rpi.gpio
+# apt remove python3-rpi.gpio
 ```
 e, depois de executar os comandos anteriores:
 ```bash
