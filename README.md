@@ -22,7 +22,8 @@ Este projeto permite controlar um conjunto de servos que compõem a mão de um b
    ```bash
    $ git clone https://github.com/Grupo-de-Pesquisa-em-Algoritmos/controle-braco.git
    ```
-3. Acesse a pasta do projeto e instale:
+3. Instale as dependencias, no caso: Flask, Flask-SocketIO e RPi.GPIO
+4. Acesse a pasta do projeto e instale:
 
    ```bash
    $ cd controle-braco
@@ -81,5 +82,5 @@ Ao usar um Raspberry Pi 5, a biblioteca padrão RPi.GPIO não é mais compatíve
 ```
 e, depois de executar os comandos anteriores:
 ```bash
-$ pip3 --break-system-packages install rpi-lgpio
+$ pip3 install --break-system-packages rpi-lgpio
 ```
