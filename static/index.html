@@ -112,8 +112,8 @@
 
         .slider {
             pointer-events: auto;
-	        z-index: 0;
-	        touch-action: none;
+            z-index: 0;
+            touch-action: none;
          
             appearance: none;
             width: 130px;
@@ -153,10 +153,10 @@
 
         .slider-value {
             user-select: none;
-    	    pointer-events: none;
-	        z-index:1;
+            pointer-events: none;
+            z-index:1;
 
-	        background-color: inherit !important;
+            background-color: inherit !important;
             color: inherit !important;
 
             margin-top: 5px;
@@ -278,10 +278,56 @@
 #open-all:active { background: linear-gradient(90deg, #669900, #666600); }
 #close-all:active { background: linear-gradient(90deg, #990000, #660000); }
 
+.gesture-menu {
+    position: fixed;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #0ff;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: #0ff;
+}
+
+.gesture-menu h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.gesture-menu button {
+    padding: 10px;
+    font-size: 1rem;
+    background: linear-gradient(90deg, #0ff, #00f);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.gesture-menu button:hover {
+    background: linear-gradient(90deg, #00f, #0ff);
+}
+
+
     </style>
     <script src="socket.io.min.js"></script>
 </head>
 <body>
+
+
+    <div class="gesture-menu">
+    <h3>Gestos</h3>
+    <button onclick="gesto('joinha')">Joinha</button>
+    <button onclick="gesto('hanglose')">hanglose</button>
+</div>
+
     <div class="container">
         <div class="hand-container">
             <!-- Imagem da mão robótica -->
@@ -409,6 +455,28 @@
                 'mov_all': all_movs
             });
         };
+
+        const moverTodosMenosPolegar = () => {
+            let m = 0;
+            for(let i = 0; i < 4; i++){
+                m |= (1 << i);
+            }
+            return m;
+        }
+        const moverTodosMenosPolegar_Minimo = () => {
+            let m = 0;
+            for(let i = 0; i < 3; i++){
+                m |= (1 << i);
+            }
+            return m;
+        }
+        const moverPolegar_Minimo = () => {
+            let m = 0;
+            m |= (1 << 3);
+            m |= (1 << 4);
+            return m;
+        }
+        
     
         const get_moveall_int = () => {
             let m = 0;
@@ -436,6 +504,18 @@
         function openAllFingers() {
             send_data(6, 0, get_moveall_int());
         }
+
+        function gesto(gest) {
+            if (gest === 'joinha') {
+                send_data(6, 180, moverTodosMenosPolegar());
+                send_data(4, 0);
+                
+            } else if (gest === 'hanglose') {
+                send_data(6, 180, moverTodosMenosPolegar_Minimo());
+                send_data(6, 0, moverPolegar_Minimo());
+            }
+     }
     </script>    
 </body>
 </html>
+
